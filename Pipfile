@@ -8,12 +8,25 @@ pytest = "*"
 hypothesis = "*"
 pytest-timeout = "*"
 pytest-cov = "*"
+pylint = "*"
 
 [packages]
+black = "==19.3b0"
 numpy = "*"
-matplotlib = "*"
 pandas = "*"
 sklearn = "*"
+jupyter = "*"
+matplotlib = "*"
+seaborn = "*"
+bokeh = "*"
+s3fs = "*"
+pyspark = "*"
+dask = "*"
+dask-ml = "*"
+partd = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = false
