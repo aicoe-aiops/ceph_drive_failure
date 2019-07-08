@@ -9,6 +9,8 @@ hypothesis = "*"
 pytest-timeout = "*"
 pytest-cov = "*"
 pylint = "*"
+black = "*"
+autopep8 = "*"
 
 [packages]
 black = "==19.3b0"
@@ -20,13 +22,12 @@ matplotlib = "*"
 seaborn = "*"
 bokeh = "*"
 s3fs = "*"
-pyspark = "*"
 dask = "*"
 dask-ml = "*"
-partd = "*"
+dask-xgboost = "*"
+plotly = "*"
+umap-learn = "*"
+rgf-python = "*"
 
 [requires]
 python_version = "3.7"
-
-[pipenv]
-allow_prereleases = false
