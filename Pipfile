@@ -9,11 +9,9 @@ hypothesis = "*"
 pytest-timeout = "*"
 pytest-cov = "*"
 pylint = "*"
-black = "*"
 autopep8 = "*"
 
 [packages]
-black = "==19.3b0"
 numpy = "*"
 pandas = "*"
 sklearn = "*"
@@ -28,6 +26,9 @@ dask-xgboost = "*"
 plotly = "*"
 umap-learn = "*"
 rgf-python = "*"
+xgboost = "*"
+lifelines = "*"
+partd = "*"
 
 [requires]
 python_version = "3.7"
