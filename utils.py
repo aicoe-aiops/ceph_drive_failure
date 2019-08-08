@@ -25,7 +25,7 @@ def append_rul_days_column(drive_data):
     return drive_data.assign(rul_days=drive_data['date'].max()-drive_data['date'])
 
 
-def featurize_ts(df, drop_cols=('date', 'failure', 'capacity_bytes', 'rul')):
+def featurize_ts(df, drop_cols=('date', 'failure', 'capacity_bytes', 'rul'), cap=True, num_days=False):
     # group by serials, drop cols which are not to be aggregated
     grouped_df = df.drop(drop_cols, axis=1).groupby('serial_number')
 
@@ -38,13 +38,33 @@ def featurize_ts(df, drop_cols=('date', 'failure', 'capacity_bytes', 'rul')):
     stds = stds.rename(columns={col: 'std_' + col for col in stds.columns})
     stds = stds.fillna(0)    # FIXME: std returns nans even for ddof=0
 
-    # capacity of hard drive
-    capacities = df[['serial_number', 'capacity_bytes']].groupby('serial_number').max()
-
     # combine features into one df
     feats = means.merge(stds, left_index=True, right_index=True)
-    feats = feats.merge(capacities, left_index=True, right_index=True)
+    
+    # capacity of hard drive
+    if cap:
+        capacities = df[['serial_number', 'capacity_bytes']].groupby('serial_number').max()
+        feats = feats.merge(capacities, left_index=True, right_index=True)
+    
+    # number of days of observed data available
+    if num_days:
+        days_per_drive = grouped_df.size().to_frame('num_days')
+        feats = feats.merge(days_per_drive, left_index=True, right_index=True)
+
     return feats
+
+
+def get_drive_data_from_json(fnames, serial_numbers):
+    # get data for only one failed and one working serial number from the last three days
+    subdfs = []
+    for fname in fnames:
+        # read in raw json
+        df = pd.read_json(fname, lines=True)
+        # convert to df format to index for serial number. then append to list of sub-dfs
+        subdfs.append(df[df['smartctl_json'].apply(pd.Series)['serial_number'].isin(serial_numbers)])
+
+    # merge all sub-dfs into one
+    return pd.concat(subdfs, ignore_index=True)
 
 
 def get_downsampled_working_sers(df, num_serials=300, model=None, scaler=None):
@@ -80,9 +100,17 @@ def get_downsampled_working_sers(df, num_serials=300, model=None, scaler=None):
 
     # iterate over centers to find the serials that were closest to each center
     working_best_serials = []
-    for i, c in enumerate(model.cluster_centers_):
+    
+    # if model was not dask, dd.compute returns tuple of len 1
+    cluster_centers = dd.compute(model.cluster_centers_)
+    if isinstance(cluster_centers, tuple):
+        cluster_centers = cluster_centers[0]
+    
+    for i, c in enumerate(cluster_centers):
         # all the points that belong to this cluster
-        cluster_pts = df.iloc[model.labels_==i]
+        cluster_pts = dd.compute(df.iloc[model.labels_==i])
+        if isinstance(cluster_pts, tuple):
+            cluster_pts = cluster_pts[0]
 
         # distance of each point to the center
         min_dist_idx = np.argmin(sp.spatial.distance.cdist(cluster_pts, c.reshape(1, -1), metric='euclidean'))
@@ -146,6 +174,19 @@ def get_vendor(model_name):
         return "Hitachi"
     else:
         return "HGST"
+
+
+def optimal_repartition_df(df, partition_size_bytes=None):
+    # ideal partition size as recommended in dask docs
+    if partition_size_bytes is None:
+        partition_size_bytes = 100 * 10**6
+
+    # determine number of partitions
+    df_size_bytes = df.memory_usage(deep=True).sum().compute()
+    num_partitions = int(np.ceil(df_size_bytes / partition_size_bytes))
+
+    # repartition
+    return df.repartition(npartitions=num_partitions)
 
 
 def save_model(model, fname, suffix=None):
