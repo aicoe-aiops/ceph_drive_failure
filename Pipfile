@@ -18,7 +18,6 @@ sklearn = "*"
 jupyter = "*"
 matplotlib = "*"
 seaborn = "*"
-bokeh = "*"
 s3fs = "*"
 dask = "*"
 dask-ml = "*"
@@ -29,6 +28,13 @@ rgf-python = "*"
 xgboost = "*"
 lifelines = "*"
 partd = "*"
+jupyterlab = "*"
+jupyterlab-git = "*"
+jupyterlab-code-formatter = "*"
+pyarrow = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
