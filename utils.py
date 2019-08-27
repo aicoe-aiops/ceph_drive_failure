@@ -25,9 +25,11 @@ def append_rul_days_column(drive_data):
     return drive_data.assign(rul_days=drive_data['date'].max()-drive_data['date'])
 
 
-def featurize_ts(df, drop_cols=('date', 'failure', 'capacity_bytes', 'rul'), cap=True, num_days=False):
+def featurize_ts(df, drop_cols=('date', 'failure', 'capacity_bytes', 'rul'), group_cols=('serial_number'), cap=True, num_days=False):
+    # TODO: assert drop and group cols have no overlap
+    
     # group by serials, drop cols which are not to be aggregated
-    grouped_df = df.drop(drop_cols, axis=1).groupby('serial_number')
+    grouped_df = df.drop(drop_cols, axis=1).groupby(group_cols)
 
     # vanilla mean values of features across time
     means = grouped_df.mean()
@@ -78,9 +80,10 @@ def get_downsampled_working_sers(df, num_serials=300, model=None, scaler=None):
 
     Keyword Arguments:
         num_serials {int} -- number of hard drives to keep (default: {300})
-        model {[type]} -- clustering model to be used for finding best hard
-                            drives (default: {None})
-        scaler {[type]} -- scaler to scale the raw input data (default: {None})
+        model {sklearn.cluster.KMeans} -- clustering model to be used for
+                                finding best hard drives (default: {None})
+        scaler {sklearn.preprocessing.RobustScaler} -- scaler to scale the
+                                            raw input data (default: {None})
 
     Returns:
         list -- serial numbers of cluster centers (best repr hard drives)
