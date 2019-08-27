@@ -1,0 +1,4 @@
+artifact_location: file:///home/kachauha/Documents/ceph_drive_failure/mlruns/3
+experiment_id: '3'
+lifecycle_stage: active
+name: vanilla_iid

@@ -1,0 +1,4 @@
+artifact_location: file:///home/kachauha/Documents/ceph_drive_failure/mlruns/2
+experiment_id: '2'
+lifecycle_stage: active
+name: mean_std_6days

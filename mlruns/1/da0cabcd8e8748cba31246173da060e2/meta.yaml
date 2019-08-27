@@ -1,0 +1,15 @@
+artifact_uri: file:///home/kachauha/Documents/ceph_drive_failure/mlruns/1/da0cabcd8e8748cba31246173da060e2/artifacts
+end_time: 1566487403279
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: deleted
+name: ''
+run_id: da0cabcd8e8748cba31246173da060e2
+run_uuid: da0cabcd8e8748cba31246173da060e2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1566487403083
+status: 4
+tags: []
+user_id: kachauha
