@@ -32,6 +32,7 @@ jupyterlab = "*"
 jupyterlab-git = "*"
 jupyterlab-code-formatter = "*"
 pyarrow = "*"
+mlflow = "*"
 
 [requires]
 python_version = "3.7"
