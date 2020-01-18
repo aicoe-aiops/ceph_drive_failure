@@ -4,38 +4,38 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pytest = "*"
-hypothesis = "*"
-pytest-timeout = "*"
-pytest-cov = "*"
 pylint = "*"
 autopep8 = "*"
 
 [packages]
-numpy = "*"
-pandas = "*"
-sklearn = "*"
 jupyter = "*"
-matplotlib = "*"
-seaborn = "*"
-s3fs = "*"
-dask = "*"
-dask-ml = "*"
-dask-xgboost = "*"
-plotly = "*"
-umap-learn = "*"
-rgf-python = "*"
-xgboost = "*"
-lifelines = "*"
-partd = "*"
 jupyterlab = "*"
 jupyterlab-git = "*"
 jupyterlab-code-formatter = "*"
+
+numpy = "*"                         # ideally should be "==1.15.1", as per diskprediction_local upstream requirements.txt, but dask-ml requires >=1.17. so need to change to "*" for dev purpose
+scipy = "*"                         # ideally should be "==1.1.0", as per diskprediction_local upstream requirements.txt, but umap-learn requires >=1.2.0 so need to change to "*" for dev purpose
+pandas = "*"
+matplotlib = "*"
+seaborn = "*"
+plotly = "*"
+
+joblib = "*"
+scikit-learn = "*"                  # ideally should be "==1.19.2", as per diskprediction_local upstream requirements.txt, but dask-ml requires >=0.21 so need to change to "*" for dev purpose
+umap-learn = "*"
+rgf-python = "*"
+lifelines = "*"
+xgboost = "*"
+
+s3fs = "*"
+partd = "*"
 pyarrow = "*"
+dask = "*"
+distributed = "*"
+dask-ml = "*"
+dask-xgboost = "*"
+
 mlflow = "*"
 
 [requires]
-python_version = "3.7"
-
-[pipenv]
-allow_prereleases = true
+python_version = "3.6"
