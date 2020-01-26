@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/linux,macos,python,windows,jupyternotebook
-# Edit at https://www.gitignore.io/?templates=linux,macos,python,windows,jupyternotebook
+# Edit at https://www.gitignore.io/?templates=linux,macos,python,windows,jupyternotebook,visualstudiocode
+
+### dask ###
+dask-worker-space
 
 ### JupyterNotebook ###
 .ipynb_checkpoints
@@ -9,6 +12,13 @@
 # Remove previous ipynb_checkpoints
 #   git rm -r .ipynb_checkpoints/
 #
+
+### VisualStudioCode ###
+.vscode/*
+#!.vscode/settings.json
+#!.vscode/tasks.json
+#!.vscode/launch.json
+#!.vscode/extensions.json
 
 ### Linux ###
 *~
