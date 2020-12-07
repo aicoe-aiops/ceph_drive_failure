@@ -6,27 +6,19 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 autopep8 = "*"
+ipykernel = "*"
 
 [packages]
-jupyter = "*"
-jupyterlab = "*"
-jupyterlab-git = "*"
-jupyterlab-code-formatter = "*"
-
 numpy = "*"                         # ideally should be "==1.15.1", as per diskprediction_local upstream requirements.txt, but dask-ml requires >=1.17. so need to change to "*" for dev purpose
 scipy = "*"                         # ideally should be "==1.1.0", as per diskprediction_local upstream requirements.txt, but umap-learn requires >=1.2.0 so need to change to "*" for dev purpose
 pandas = "*"
 matplotlib = "*"
 seaborn = "*"
 plotly = "*"
-
 joblib = "*"
 scikit-learn = "*"                  # ideally should be "==1.19.2", as per diskprediction_local upstream requirements.txt, but dask-ml requires >=0.21 so need to change to "*" for dev purpose
 umap-learn = "*"
-rgf-python = "*"
-lifelines = "*"
 xgboost = "*"
-
 s3fs = "*"
 partd = "*"
 pyarrow = "*"
@@ -34,8 +26,10 @@ dask = "*"
 distributed = "*"
 dask-ml = "*"
 dask-xgboost = "*"
-
 mlflow = "*"
+fbprophet = "*"
+tqdm = "*"
+statsmodels = "*"
 
 [requires]
 python_version = "3.6"
