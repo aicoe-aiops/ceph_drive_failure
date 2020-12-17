@@ -7,7 +7,7 @@ _Authors:_  Karan Chauhan (kachau@redhat.com), Michael Clifford (mcliffor@redhat
 
 _Date Created:_ 11 December 2020
 
-_Date Updated:_ 15 December 2020
+_Date Updated:_ 17 December 2020
 
 _Tags:_ supervised learning, time series, classification, ceph
 
@@ -25,14 +25,14 @@ However, we want to go beyond heuristics for determining failure. The probabilit
 
 Using the right data is critical for creating meaningful models. With that in mind, we used SMART metrics collected from hard drives as our training data. SMART is a monitoring system that reports various indicators of drive reliability such as read error rate, uncorrectable sector count, etc[2]. We used the SMART metrics dataset that Backblaze has curated and made publicly available[3]. In addition to SMART metrics, this dataset also contains labels that specify whether or not a drive failed on a given date. Having these labels is incredibly powerful as it opens the door for training supervised machine learning models.
 
-[.center]
-|===
-| *date*                 | *serial no.*           | *smart 1 raw*          | *smart 1 normalized*   | ...                  | *smart 250 normalized* | *failure*
-| 2020-01-01           | hdd1234             | 10                   | 100                  | ...                  | 100                  | 0
-| 2020-01-01           | hdd5678             | 12                   | 99                   | ...                  | 100                  | 0
-| 2020-01-02           | hdd1234             | 23                   | 70                   | ...                  | 80                   | 1
-| 2020-01-02           | hdd5678             | 13                   | 100                  | ...                  | 99                   | 0
-|===
+
+| date       | serial no. | smart 1 raw | smart 1 normalized | ... | smart 250 normalized | failure |
+| ---------- | ---------- | ----------- | ------------------ | --- | -------------------- | ------- |
+| 2020-01-01 | hdd1234    | 10          | 100                | ... | 100                  | 0       |
+| 2020-01-01 | hdd5678    | 12          | 99                 | ... | 100                  | 0       |
+| 2020-01-02 | hdd1234    | 23          | 70                 | ... | 80                   | 1       |
+| 2020-01-02 | hdd5678    | 13          | 100                | ... | 99                   | 0       |
+
 Table 1: Illustrative rendition of the Backblaze dataset
 
 ## Methodology
@@ -46,20 +46,17 @@ Then, to determine what kind of models to build, we focused our attention to the
 1. Model output should be “good”, “warning”, or “bad”
 2. At most 6 days of data can be _guaranteed_ to be available at run time
 
-// ![SampleInput](./sampleinput.png "SampleInput")
-image::./sampleinput.png[align=center]
+![SampleInput](./sampleinput.png "SampleInput")
 
 Figure 1: Sample model input (only one SMART metric shown)
 
-// ![SampleOutput](./sampleoutput.png "SampleOutput")
-image::./sampleoutput.png[align=center]
+![SampleOutput](./sampleoutput.png "SampleOutput")
 
 Figure 2: Sample model output
 
 Considering all these facts, we decided that building multiclass time series classification models was the way to go. Our approach for training models can be summarized as follows: for each 6-day sliding window, create a feature vector characterizing the multidimensional time series, and then feed this feature vector to a classification model. The label for each sliding window would be good/warning/bad based on how many days away from failure the drive was on the 6th (i.e. most recent) day.
 
-// ![SampleFeatures](./featurization.png "SampleFeatures")
-image::./featurization.png[align=center]
+![SampleFeatures](./featurization.png "SampleFeatures")
 
 Figure 3: Creating feature vectors from each sliding window
 
@@ -89,27 +86,27 @@ In this blog we discussed an important practical use case of data science in the
 
 ## References
 
-{blank}[1] https://access.redhat.com/documentation/en-us/red_hat_amq/7.5/html/configuring_amq_broker/configuring-fault-tolerant-system-configuring#about-ceph-storage-clusters-configuring[How Red Hat Ceph Storage clusters work]
+[1] [How Red Hat Ceph Storage clusters work](https://access.redhat.com/documentation/en-us/red_hat_amq/7.5/html/configuring_amq_broker/configuring-fault-tolerant-system-configuring#about-ceph-storage-clusters-configuring)
 
-{blank}[2] https://en.wikipedia.org/wiki/S.M.A.R.T.\[S.M.A.R.T]
+[2] [S.M.A.R.T](https://en.wikipedia.org/wiki/S.M.A.R.T.)
 
-{blank}[3] https://www.backblaze.com/b2/hard-drive-test-data.html[Backblaze Dataset]
+[3] [Backblaze Dataset](https://www.backblaze.com/b2/hard-drive-test-data.html)
 
-{blank}[4] https://github.com/aicoe-aiops/ceph_drive_failure/blob/master/notebooks/step2a_data_cleaner_seagate.ipynb[Data Cleaning Jupyter Notebook]
+[4] [Data Cleaning Jupyter Notebook](https://github.com/aicoe-aiops/ceph_drive_failure/blob/master/notebooks/step2a_data_cleaner_seagate.ipynb)
 
-{blank}[5] https://docs.ceph.com/en/latest/mgr/diskprediction/[Ceph diskprediction module]
+[5] [Ceph diskprediction module](https://docs.ceph.com/en/latest/mgr/diskprediction/)
 
-{blank}[6] https://github.com/ceph/ceph/tree/master/src/pybind/mgr/diskprediction_local/models/prophetstor[ProphetStor model]
+[6] [ProphetStor model](https://github.com/ceph/ceph/tree/master/src/pybind/mgr/diskprediction_local/models/prophetstor)
 
-{blank}[7] https://github.com/chauhankaranraj/ceph_drive_failure/blob/master/notebooks/step3b_ternary_clf.ipynb[Classifier Models Exploratory Jupyter Notebook]
+[7] [Classifier Models Exploratory Jupyter Notebook](https://github.com/chauhankaranraj/ceph_drive_failure/blob/master/notebooks/step3b_ternary_clf.ipynb)
 
-{blank}[8] https://github.com/aicoe-aiops/ceph_drive_failure[GitHub repo]
+[8] [GitHub repo](https://github.com/aicoe-aiops/ceph_drive_failure)
 
-{blank}[9] https://github.com/AICoE/disk-failure-prediction[GitHub repo with Kaggle-like setup]
+[9] [GitHub repo with Kaggle-like setup](https://github.com/AICoE/disk-failure-prediction)
 
-{blank}[10] https://github.com/AICoE/disk-failure-prediction/blob/master/Getting_Started.ipynb[Getting Started Jupyter Notebook]
+[10] [Getting Started Jupyter Notebook](https://github.com/AICoE/disk-failure-prediction/blob/master/Getting_Started.ipynb)
 
-{blank}[11] https://docs.ceph.com/en/latest/mgr/telemetry/[Ceph Telemetry]
+[11] [Ceph Telemetry](https://docs.ceph.com/en/latest/mgr/telemetry/)
 
 ### Project Material
 
