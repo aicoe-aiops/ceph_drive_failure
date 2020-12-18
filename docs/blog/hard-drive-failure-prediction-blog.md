@@ -1,6 +1,6 @@
 ---
-title: Hard Drive Failure Prediction
-description: Hard drive failure prediction models for Ceph
+title: Hard Drive Failure Prediction in Ceph
+description: Machine learning models for predicting disk failure in Ceph clusters
 ---
 
 _Authors:_  Karan Chauhan (kachau@redhat.com), Michael Clifford (mcliffor@redhat.com)
@@ -64,20 +64,18 @@ Figure 3: Creating feature vectors from each sliding window
 
 To evaluate models, we first created train and test sets. We ensured that data in these two sets was from completely different drives, so that there is no “leakage” across the two sets. We trained and evaluated a few classical models such as decision trees, GBDTs, random forest, etc[7]. Note that to ensure ease in downstream packaging, we limited ourselves to use only the python packages available in EPEL. Under this constraint, we found that a random forest classifier performed the best, and outperformed the SVM based sample model currently used as default on Ceph. Specifically, the results were as follows
 
-[.center]
-|===
-| Model       | Good        | Warning     | Bad
-| ProphetStor | *0.998*     | 0.000       | *0.003*
-| Red Hat     | 0.971       | *0.001*       | 0.002
-|===
+| Model       | Good    | Warning | Bad     |
+| ----------- | ------- | ------- | ------- |
+| ProphetStor | **0.998** | 0.000   | **0.003** |
+| Red Hat     | 0.971   | **0.001** | 0.002   |
+
 Table 2a: Recall score on each class for two models
 
-[.center]
-|===
-| Model       | Good        | Warning     | Bad
-| ProphetStor | 0.489       | 0.000       | 0.266
-| Red Hat     | *0.489*     | *0.310*     | *0.333*
-|===
+| Model       | Good    | Warning | Bad     |
+| ----------- | ------- | ------- | ------- |
+| ProphetStor | 0.489   | 0.000   | 0.266   |
+| Red Hat     | **0.489** | **0.310** | **0.333** |
+
 Table 2b: Precision score on each class for two models
 
 ## Conclusion
