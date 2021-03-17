@@ -54,6 +54,7 @@ integrate the models into the end product and deliver them to the customer.
 * Pro: Provides opportunity to use Thoth recommended software stack to maximize security and performance.
 * Pro: Ceph already had a module ([diskprediction_cloud](https://github.com/ceph/ceph/tree/nautilus/src/pybind/mgr/diskprediction_cloud)) designed to query an external service for failure predictions. But this had to be removed because the external service dropped support. Under this option, this module can be revived.
 * Con: Disk failure prediction will not work "out of the box"; it would depend on the deployed service.
+* Con: Under this option, the models will not be usable in a disconnected environment.
 * Con: Some users may be reluctant to send their disk health data to the service.
 
 ## Decision Drivers
@@ -64,16 +65,15 @@ integrate the models into the end product and deliver them to the customer.
 * What would need to happen if we want to increase model complexity?
 * What would need to happen if we want to add, remove or replace models?
 
-## Decision Outcome [to be discussed]
 
-Suggested choice: Option #1 for current models, Option #5 for future models
+## Decision Outcome
 
-* The only package missing from EPEL8 that the current models require is `scikit-learn`. So explicitly
-running  `pip install scikit-learn` during container build should be a quick fix, even though it deviates from a
-current Red Hat-internal workflow.
+1. Use option #1 for the current setup.
 
-* Since only one package is being `pip install`-ed, this likely won't introduce any "package interdependency" issues.
+    * The only package missing from EPEL8 that the current models require is `scikit-learn`. So explicitly running  `pip install scikit-learn` during container build should be a quick fix, even though it deviates from a typical workflow.
 
-* Going forward, we can enforce a strict rule that these "baked-in" models used by the `diskprediction_local` module must not use any ML libraries other than `scikit-learn`. This limits the types of models that can be used, but it makes downstream packaging and model integration easier. Less accurate model is better than no model at all.
+    * Since only one package is being `pip install`-ed, this likely won't introduce any "package interdependency" issues.
 
-* Going forward, we can deploy the more complex models (e.g. survival analysis, neural networks, etc.) as a service that the `diskprediction_cloud` module can query. Users who want more accurate predictions than what the "local" models can provide, should send a query to this service along with their disk health data (sensitive info removed).
+2. Going forward, remove the data preprocessing and ML inference code from Ceph tree, and create a separate python library containing this code. This will have the following benefits:
+    * In addition to Ceph, others will be able to use these disk health prediction models too.
+    * In future if we want to implement option #5 as an additional feature, this python library can also be used in that.
