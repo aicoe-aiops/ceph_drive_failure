@@ -9,6 +9,7 @@ autopep8 = "*"
 ipykernel = "*"
 
 [packages]
+src = {editable = true, path = "./"}
 numpy = "*"                         # ideally should be "==1.15.1", as per diskprediction_local upstream requirements.txt, but dask-ml requires >=1.17. so need to change to "*" for dev purpose
 scipy = "*"                         # ideally should be "==1.1.0", as per diskprediction_local upstream requirements.txt, but umap-learn requires >=1.2.0 so need to change to "*" for dev purpose
 pandas = "*"

@@ -1,3 +1,4 @@
+"""Helper functions to use during SMART data analysis."""
 import datetime
 import cloudpickle
 
@@ -11,7 +12,8 @@ from sklearn.cluster import KMeans
 
 
 def append_rul_days_column(drive_data):
-    """Appends remaining-useful-life column to pandas/dask dataframe
+    """Append remaining-useful-life column to pandas/dask dataframe.
+
     RUL is calculated in terms of days. It is the difference between the date
     on which a disk failed (or if it hasnt failed, then max date of observation)
     and the current row (entry in time series) date
@@ -22,57 +24,79 @@ def append_rul_days_column(drive_data):
     Returns:
         dask.dataframe/pandas.DataFrame -- dataframe with the added column
     """
-    return drive_data.assign(rul_days=drive_data['date'].max()-drive_data['date'])
+    return drive_data.assign(rul_days=drive_data["date"].max() - drive_data["date"])
 
 
-def featurize_ts(df, drop_cols=('date', 'failure', 'capacity_bytes', 'rul'), group_cols=('serial_number'), cap=True, num_days=False):
+def featurize_ts(
+    df,
+    drop_cols=("date", "failure", "capacity_bytes", "rul"),
+    group_cols=("serial_number"),
+    cap=True,
+    num_days=False,
+):
+    """
+    Create model input features out of raw SMART data input.
+
+    Currently the raw input is 6 days of data (time series).
+    The features extracted are mean, std, coefficient of variation for each SMART metric.
+    """
     # TODO: assert drop and group cols have no overlap
-    
+
     # group by serials, drop cols which are not to be aggregated
     grouped_df = df.drop(drop_cols, axis=1).groupby(group_cols)
 
     # vanilla mean values of features across time
     means = grouped_df.mean()
-    means = means.rename(columns={col: 'mean_' + col for col in means.columns})
+    means = means.rename(columns={col: "mean_" + col for col in means.columns})
 
     # vanilla std values of features across time
     stds = grouped_df.std(ddof=0)
-    stds = stds.rename(columns={col: 'std_' + col for col in stds.columns})
-    stds = stds.fillna(0)    # FIXME: std returns nans even for ddof=0
+    stds = stds.rename(columns={col: "std_" + col for col in stds.columns})
+    stds = stds.fillna(0)  # FIXME: std returns nans even for ddof=0
 
     # combine features into one df
     feats = means.merge(stds, left_index=True, right_index=True)
-    
+
     # capacity of hard drive
     if cap:
-        capacities = df[['serial_number', 'capacity_bytes']].groupby('serial_number').max()
+        capacities = (
+            df[["serial_number", "capacity_bytes"]].groupby("serial_number").max()
+        )
         feats = feats.merge(capacities, left_index=True, right_index=True)
-    
+
     # number of days of observed data available
     if num_days:
-        days_per_drive = grouped_df.size().to_frame('num_days')
+        days_per_drive = grouped_df.size().to_frame("num_days")
         feats = feats.merge(days_per_drive, left_index=True, right_index=True)
 
     return feats
 
 
 def get_drive_data_from_json(fnames, serial_numbers):
+    """Read individual smartctl jsons and create a combined, flat dataframe."""
     # get data for only one failed and one working serial number from the last three days
     subdfs = []
     for fname in fnames:
         # read in raw json
         df = pd.read_json(fname, lines=True)
         # convert to df format to index for serial number. then append to list of sub-dfs
-        subdfs.append(df[df['smartctl_json'].apply(pd.Series)['serial_number'].isin(serial_numbers)])
+        subdfs.append(
+            df[
+                df["smartctl_json"]
+                .apply(pd.Series)["serial_number"]
+                .isin(serial_numbers)
+            ]
+        )
 
     # merge all sub-dfs into one
     return pd.concat(subdfs, ignore_index=True)
 
 
 def get_downsampled_working_sers(df, num_serials=300, model=None, scaler=None):
-    """Downsample the input dataframe of working hard drives by selecting best
-    representatives of the data using clustering. Return the identifiers
-    (serial numbers) of these best representative hard drives (cluster centers)
+    """Downsample the input dataframe of working hard drives.
+
+    Downsample by selecting best representatives of the data using clustering.
+    Return the identifiers (serial numbers) of these best representative hard drives (cluster centers).
 
     Arguments:
         df {pd.DataFrame} -- dataframe where each row is the feature vector of
@@ -94,37 +118,38 @@ def get_downsampled_working_sers(df, num_serials=300, model=None, scaler=None):
 
     # default to vanilla kmeans
     if model is None:
-        model = KMeans(n_clusters=num_serials,
-                    max_iter=1e6,
-                    n_jobs=-1)
+        model = KMeans(n_clusters=num_serials, max_iter=1e6, n_jobs=-1)
 
     # fit model to scaled data
     model.fit(scaler.fit_transform(df))
 
     # iterate over centers to find the serials that were closest to each center
     working_best_serials = []
-    
+
     # if model was not dask, dd.compute returns tuple of len 1
     cluster_centers = dd.compute(model.cluster_centers_)
     if isinstance(cluster_centers, tuple):
         cluster_centers = cluster_centers[0]
-    
+
     for i, c in enumerate(cluster_centers):
         # all the points that belong to this cluster
-        cluster_pts = dd.compute(df.iloc[model.labels_==i])
+        cluster_pts = dd.compute(df.iloc[model.labels_ == i])
         if isinstance(cluster_pts, tuple):
             cluster_pts = cluster_pts[0]
 
         # distance of each point to the center
-        min_dist_idx = np.argmin(sp.spatial.distance.cdist(cluster_pts, c.reshape(1, -1), metric='euclidean'))
+        min_dist_idx = np.argmin(
+            sp.spatial.distance.cdist(cluster_pts, c.reshape(1, -1), metric="euclidean")
+        )
         working_best_serials.append(cluster_pts.iloc[min_dist_idx].name)
 
     return working_best_serials
 
 
 def get_nan_count_percent(df, divisor=None):
-    """Calculates the number of nan values per column,
-        both as an absolute amount and as a percentage of some pre-defined "total" amount
+    """Calculate the number of nan values per column.
+
+    Calculate it both as an absolute amount and as a percentage of some pre-defined "total" amount.
 
     Arguments:
         df {pandas.DataFrame/dask.dataframe} -- dataframe whose nan count to generate
@@ -159,7 +184,7 @@ def get_nan_count_percent(df, divisor=None):
 
 
 def get_vendor(model_name):
-    """Returns the vendor/manufacturer name for a given hard drive model name
+    """Return the vendor/manufacturer name for a given hard drive model name.
 
     Arguments:
         model_name {str} -- model name of the hard drive
@@ -180,9 +205,10 @@ def get_vendor(model_name):
 
 
 def optimal_repartition_df(df, partition_size_bytes=None):
+    """Repartition dask df according to optimal settings recommended by docs."""
     # ideal partition size as recommended in dask docs
     if partition_size_bytes is None:
-        partition_size_bytes = 100 * 10**6
+        partition_size_bytes = 100 * 10 ** 6
 
     # determine number of partitions
     df_size_bytes = df.memory_usage(deep=True).sum().compute()
@@ -193,7 +219,7 @@ def optimal_repartition_df(df, partition_size_bytes=None):
 
 
 def save_model(model, fname, suffix=None):
-    """Serialize and save a dask or sklearn model
+    """Serialize and save a dask or sklearn model.
 
     Arguments:
         model {dask_ml or sklearn object} -- trained model to save
@@ -211,16 +237,16 @@ def save_model(model, fname, suffix=None):
         suffix = datetime.datetime.now().strftime("%b_%d_%Y_%H_%M_%S")
 
     # serialize and write
-    with open(fname + '_' + suffix + '.cpkl', 'wb') as f:
+    with open(fname + "_" + suffix + ".cpkl", "wb") as f:
         cloudpickle.dump(model, f)
 
 
 def load_model(fname):
-    """Deserializes and loads a dask or sklearn model
+    """Deserialize and load a dask or sklearn model.
 
     Arguments:
         fname {str} -- path or filename (in current dir) of serialized model
     """
-    with open(fname, 'rb') as f:
+    with open(fname, "rb") as f:
         model = cloudpickle.load(f)
     return model

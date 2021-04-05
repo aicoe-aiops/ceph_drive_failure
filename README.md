@@ -16,13 +16,13 @@ At inference time, 6 days of SMART data (6 rows from the Backblaze dataset) will
 **NOTE:** Although the end goal is a multiclass classifier, building a binary classifier ("no fail"/"fail") could be a good starting point in understanding the problem and setup. Additionally, data exploration and insightful analysis could also be useful. These would be welcome contributions to this project as well.
 
 ## Notebooks/Kernels
-The following are some notebooks to get started or to use as utils:  
-`data_explorer.ipynb`  
-`data_cleaner_*.ipynb`  
-`clustering_and_model_exploration.ipynb`  
-`multiclass_clf.ipynb`  
+The following are some notebooks to get started or to use as utils:
+`data_explorer.ipynb`
+`data_cleaner_*.ipynb`
+`clustering_and_model_exploration.ipynb`
+`multiclass_clf.ipynb`
 
 ## Contact
-Karanraj Chauhan  
-Software Engineer, AI Center of Excellence - Office of the CTO  
+Karanraj Chauhan
+Software Engineer, AI Center of Excellence - Office of the CTO
 Red Hat, Inc.
