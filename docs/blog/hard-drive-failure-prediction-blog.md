@@ -90,19 +90,19 @@ In this blog we discussed an important practical use case of data science in the
 
 [3] [Backblaze Dataset](https://www.backblaze.com/b2/hard-drive-test-data.html)
 
-[4] [Data Cleaning Jupyter Notebook](https://github.com/aicoe-aiops/ceph_drive_failure/blob/master/notebooks/step2a_data_cleaner_seagate.ipynb)
+[4] [Data Cleaning Jupyter Notebook](https://github.com/aicoe-aiops/ceph_drive_failure/blob/1aaee468e2429c6318e280bf84e49b70d2aa3129/notebooks/data_sources/backblaze/step2a_data_cleaner_seagate.ipynb)
 
 [5] [Ceph diskprediction module](https://docs.ceph.com/en/latest/mgr/diskprediction/)
 
 [6] [ProphetStor model](https://github.com/ceph/ceph/tree/master/src/pybind/mgr/diskprediction_local/models/prophetstor)
 
-[7] [Classifier Models Exploratory Jupyter Notebook](https://github.com/chauhankaranraj/ceph_drive_failure/blob/master/notebooks/step3b_ternary_clf.ipynb)
+[7] [Classifier Models Exploratory Jupyter Notebook](https://github.com/aicoe-aiops/ceph_drive_failure/blob/1aaee468e2429c6318e280bf84e49b70d2aa3129/notebooks/data_sources/backblaze/step3b_ternary_clf.ipynb)
 
 [8] [GitHub repo](https://github.com/aicoe-aiops/ceph_drive_failure)
 
 [9] [GitHub repo with Kaggle-like setup](https://github.com/AICoE/disk-failure-prediction)
 
-[10] [Getting Started Jupyter Notebook](https://github.com/AICoE/disk-failure-prediction/blob/master/Getting_Started.ipynb)
+[10] [Getting Started Jupyter Notebook](https://github.com/AICoE/disk-failure-prediction/blob/705220704fdc7f2c3bdc555bbaf33767e3ec2a92/Getting_Started.ipynb)
 
 [11] [Ceph Telemetry](https://docs.ceph.com/en/latest/mgr/telemetry/)
 
@@ -110,7 +110,7 @@ In this blog we discussed an important practical use case of data science in the
 
 #### Steps to get you started:
 
-1. Visit https://jupyterhub-opf-jupyterhub.apps.cnv.massopen.cloud/hub/login
+1. Visit https://jupyterhub-opf-jupyterhub.apps.zero.massopen.cloud/hub/login
 2. Login with your google account
 3. In this Spawn screen, select ceph-drive-failure:latest
 4. Once your server starts, go into the directory named ceph-drive-failure-yyyy-mm-dd-hh-mm
