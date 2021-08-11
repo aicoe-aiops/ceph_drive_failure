@@ -3,16 +3,16 @@
 This project consists of the following main workstreams:
 
 - [Hard Drive Failure Prediction](#hard-drive-failure-prediction)
-    - [Data Exploration](#Data-Exploration)
-    - [Data Cleaning](#Data-Cleaning)
-    - [Model Training](#Model-Training)
-    - [End-To-End Pipeline](#End-To-End-Pipeline)
+    - [Data Exploration](#data-exploration)
+    - [Data Cleaning](#data-cleaning)
+    - [Model Training](#model-training)
+    - [End-To-End Pipeline](#end-to-end-pipeline)
 - [SMART Metric Forecasting](#smart-metric-forecasting)
-    - [Univariate Models](#Univariate-Models)
-    - [Multivariate Models](#Multivariate-Models)
+    - [Univariate Models](#univariate-models)
+    - [Multivariate Models](#multivariate-models)
 - [Alternate Dataset Explorations](#alternate-dataset-explorations)
-    - [Ceph Telemetry Dataset](#Ceph-Telemetry-Dataset)
-    - [FAST Dataset](#FAST-Dataset)
+    - [Ceph Telemetry Dataset](#ceph-telemetry-dataset)
+    - [FAST Dataset](#fast-dataset)
 - [Disk Health Predictor Library](#disk-health-predictor-library)
 
 
@@ -81,3 +81,5 @@ Recent [research](http://codegreen.cs.wayne.edu/wizard/#Publication) suggests th
 # Disk Health Predictor Library
 
 The goal of this workstream is to create an open source python module containing the models trained in this project. The goal is to make these models easily accessible and usable by everyone, not just Ceph users. This way, anyone can run inference on their own storage system using the models built in this project.
+
+- [Python library](https://github.com/aicoe-aiops/disk-health-predictor)
